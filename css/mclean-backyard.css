@@ -167,7 +167,9 @@ button { font: inherit; color: inherit; }
 }
 .hero-poster img, .hero-video { object-fit: cover; object-position: 50% 50%; }
 .hero-poster { z-index: 2; transition: opacity .9s ease; }
-.hero-video { z-index: 1; }
+.hero-video { z-index: 1; transition: opacity .7s ease; }
+/* loop restart: dip the (already dusky) final seconds into the dusk ground, then fade the opening frame back in */
+.hero.is-dipping .hero-video { opacity: 0; transition-duration: .45s; }
 .hero.is-playing .hero-poster { opacity: 0; pointer-events: none; }
 .hero-feather { display: none; }
 
@@ -213,6 +215,7 @@ button { font: inherit; color: inherit; }
   font: 500 .68rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase;
   color: var(--on-dusk); cursor: pointer;
 }
+.rail-controls { display: inline-flex; gap: 6px; flex: none; }
 .rail-control:hover { border-color: var(--on-dusk-soft); }
 .rail-control svg { width: 12px; height: 12px; fill: currentColor; }
 .rail-control .i-play, .rail-control .i-replay { display: none; }
@@ -245,6 +248,7 @@ button { font: inherit; color: inherit; }
 }
 @media (max-width: 599px) {
   .rail { display: none; }
+  .rail-control-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .rail-progress { margin-top: 6px; }
   .hero-rail { padding-top: 8px; padding-bottom: 6px; }
   .hero-copy { padding-top: 18px; padding-bottom: 36px; }

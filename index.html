@@ -74,7 +74,7 @@
       <img src="assets/mclean/poster-1280.jpg" width="1280" height="714" fetchpriority="high" decoding="async"
            alt="A finished backyard at dusk: a family eating under a timber pergola with string lights, children and a dog playing on the lawn, and a stone fire pit beside an outdoor sofa.">
     </picture>
-    <video class="hero-video" muted playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"
+    <video class="hero-video" autoplay muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"
            data-src-mobile="assets/mclean/hero-720m" data-src-desktop="assets/mclean/hero-1280"></video>
     <div class="hero-feather" aria-hidden="true"></div>
   </div>
@@ -92,10 +92,16 @@
   <div class="hero-rail" data-rail>
     <div class="rail-head">
       <span class="mono">The transformation<span class="rail-current" data-current></span></span>
-      <button class="rail-control" type="button" data-video-toggle hidden>
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path class="i-pause" d="M4 3h3v10H4zM9 3h3v10H9z"/><path class="i-play" d="M4 2.5v11l9-5.5z"/><path class="i-replay" d="M8 3a5 5 0 1 1-4.6 3H1.8L4.5 2.8 7.2 6H5.5A3.5 3.5 0 1 0 8 4.5z"/></svg>
-        <span data-video-label>Pause</span>
-      </button>
+      <span class="rail-controls">
+        <button class="rail-control" type="button" data-video-replay aria-label="Replay the transformation film from the start" hidden>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3a5 5 0 1 1-4.6 3H1.8L4.5 2.8 7.2 6H5.5A3.5 3.5 0 1 0 8 4.5z"/></svg>
+          <span class="rail-control-text">Replay</span>
+        </button>
+        <button class="rail-control" type="button" data-video-toggle hidden>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path class="i-pause" d="M4 3h3v10H4zM9 3h3v10H9z"/><path class="i-play" d="M4 2.5v11l9-5.5z"/><path class="i-replay" d="M8 3a5 5 0 1 1-4.6 3H1.8L4.5 2.8 7.2 6H5.5A3.5 3.5 0 1 0 8 4.5z"/></svg>
+          <span data-video-label>Pause</span>
+        </button>
+      </span>
     </div>
     <ol class="rail">
       <li data-stage="0" data-start="0"><button type="button"><span class="rail-n">01</span><span class="rail-t">Problem</span></button></li>

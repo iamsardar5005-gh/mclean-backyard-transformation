@@ -23,8 +23,10 @@
   /* ---------- hero film ----------
      The poster (a finished, lived-in frame) is the LCP element and renders
      immediately. The film is only requested after the page has loaded, then
-     plays once — neglected yard → plan → build → lived in — and holds on its
-     final evening frame. The stage rail tracks the six chapters. */
+     loops — neglected yard → plan → build → lived in. Just before each
+     restart the video dips into the dusk ground and the opening frame fades
+     back in, so evening never hard-cuts to daylight. The stage rail tracks
+     the six chapters. Reduced motion / Save-Data keep the static poster. */
   var hero = document.querySelector('.hero');
   var video = hero && hero.querySelector('.hero-video');
   var rail = hero && hero.querySelector('[data-rail]');
@@ -33,6 +35,8 @@
   var current = rail && rail.querySelector('[data-current]');
   var control = rail && rail.querySelector('[data-video-toggle]');
   var controlLabel = control && control.querySelector('[data-video-label]');
+  var replay = rail && rail.querySelector('[data-video-replay]');
+  var DIP_LEAD = 0.5; // seconds before the end to start the fade-out
   var starts = stages.map(function (li) { return parseFloat(li.getAttribute('data-start')) || 0; });
   var names = stages.map(function (li) { return li.querySelector('.rail-t').textContent; });
   var rafId = 0;
@@ -62,14 +66,23 @@
     if (current && current.textContent !== names[idx]) current.textContent = names[idx];
   }
 
+  function syncDip() {
+    var d = video.duration;
+    if (!d) return;
+    var near = !video.paused && video.currentTime >= d - DIP_LEAD;
+    hero.classList.toggle('is-dipping', near);
+  }
+
   function loop() {
     paintRail();
+    syncDip();
     if (!video.paused && !video.ended) rafId = requestAnimationFrame(loop);
   }
 
   function setControl(state) {
     if (!control) return;
     control.hidden = false;
+    if (replay) replay.hidden = false;
     control.setAttribute('data-state', state);
     controlLabel.textContent = state === 'playing' ? 'Pause' : state === 'ended' ? 'Replay' : 'Play';
     control.setAttribute('aria-label', (state === 'playing' ? 'Pause' : state === 'ended' ? 'Replay' : 'Play') + ' the transformation film');
@@ -84,6 +97,9 @@
       : video.canPlayType('video/webm; codecs="vp9"') ? '.webm' : '';
     if (!ext) { setStatic(); return; }
     var mobile = window.matchMedia('(max-width: 599px)').matches;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
     video.src = video.getAttribute(mobile ? 'data-src-mobile' : 'data-src-desktop') + ext;
     video.preload = 'auto';
 
@@ -102,9 +118,14 @@
       setControl('ended');
       paintRail();
     });
-    video.addEventListener('seeked', paintRail);
+    // A native loop restart is a seek to 0: clear the dip so the opening fades in.
+    video.addEventListener('seeked', function () { paintRail(); syncDip(); });
     video.addEventListener('timeupdate', paintRail);
-    video.addEventListener('error', function () { setStatic(); if (control) control.hidden = true; });
+    video.addEventListener('error', function () {
+      setStatic();
+      if (control) control.hidden = true;
+      if (replay) replay.hidden = true;
+    });
 
     var p = video.play();
     if (p && typeof p.catch === 'function') {
@@ -123,6 +144,15 @@
       else video.pause();
     });
   }
+  if (replay) {
+    replay.addEventListener('click', function () {
+      if (!video || !video.src) return;
+      hero.classList.remove('is-dipping');
+      video.currentTime = 0;
+      paintRail();
+      video.play();
+    });
+  }
 
   stages.forEach(function (li, i) {
     li.querySelector('button').addEventListener('click', function () {
@@ -139,7 +169,7 @@
     else window.addEventListener('load', function () { setTimeout(startFilm, 120); });
 
     reduceMotion.addEventListener && reduceMotion.addEventListener('change', function (e) {
-      if (e.matches && video) { video.pause(); hero.classList.remove('is-playing'); setStatic(); }
+      if (e.matches && video) { video.pause(); hero.classList.remove('is-playing', 'is-dipping'); setStatic(); }
     });
 
     // Don't burn CPU while the hero is off-screen mid-film.
